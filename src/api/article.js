@@ -1,40 +1,40 @@
-import request from '@/utils/request'
+import { service } from '@/utils/request'
 
 export function fetchList(query) {
-  return request({
-    url: '/vue-element-admin/article/list',
+  return service({
+    url: '/article/list',
     method: 'get',
     params: query
   })
 }
 
 export function fetchArticle(id) {
-  return request({
-    url: '/vue-element-admin/article/detail',
+  return service({
+    url: '/article/detail',
     method: 'get',
     params: { id }
   })
 }
 
 export function fetchPv(pv) {
-  return request({
-    url: '/vue-element-admin/article/pv',
+  return service({
+    url: '/article/pv',
     method: 'get',
     params: { pv }
   })
 }
 
 export function createArticle(data) {
-  return request({
-    url: '/vue-element-admin/article/create',
+  return service({
+    url: '/article/create',
     method: 'post',
     data
   })
 }
 
 export function updateArticle(data) {
-  return request({
-    url: '/vue-element-admin/article/update',
+  return service({
+    url: '/article/update',
     method: 'post',
     data
   })

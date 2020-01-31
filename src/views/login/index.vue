@@ -75,6 +75,8 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import db from '@/utils/localstorage'
+import { randomNum } from '@/utils'
 import SocialSign from './components/SocialSignin'
 
 export default {
@@ -109,7 +111,9 @@ export default {
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      randomId: randomNum(24, 16),
+      imageCode: ''
     }
   },
   watch: {
@@ -128,6 +132,7 @@ export default {
     // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
+    db.clear()
     if (this.loginForm.username === '') {
       this.$refs.username.focus()
     } else if (this.loginForm.password === '') {
@@ -155,21 +160,67 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+          // this.loading = true
+          // this.$store.dispatch('/auth/oauth/token', this.loginForm)
+          //   .then(() => {
+          //     this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+          //     this.loading = false
+          //   })
+          //   .catch(() => {
+          //     this.loading = false
+          //   })
         } else {
           console.log('error submit!!')
           return false
         }
       })
+      this.loading = true
+      const that = this
+      this.$login('auth/oauth/token', {
+        ...that.loginForm,
+        key: this.randomId
+      }).then((r) => {
+        const data = r.data.data
+        this.saveLoginData(data)
+        // this.$router.push('/dashboard')
+        this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+        this.loading = false
+        // this.getUserDetailInfo()
+        // this.loginSuccessCallback()
+      }).catch((error) => {
+        console.error(error)
+        that.loading = false
+        // that.getCodeImage()
+      })
     },
+    saveLoginData(data) {
+      this.$store.commit('auth/setAccessToken', data.access_token)
+      this.$store.commit('auth/setRefreshToken', data.refresh_token)
+      const current = new Date()
+      const expireTime = current.setTime(current.getTime() + 1000 * data.expires_in)
+      this.$store.commit('auth/setExpireTime', expireTime)
+    },
+    // getUserDetailInfo() {
+    //   this.$get('auth/user').then((r) => {
+    //     this.$store.commit('auth/setUser', r.data.principal)
+    //     this.$message({
+    //       message: this.$t('tips.loginSuccess'),
+    //       type: 'success'
+    //     })
+    //     this.loading = false
+    //     this.$router.push('/')
+    //   }).catch((error) => {
+    //     this.$message({
+    //       message: this.$t('tips.loginFail'),
+    //       type: 'error'
+    //     })
+    //     console.error(error)
+    //     this.loading = false
+    //   })
+    // },
+    // loginSuccessCallback() {
+    //   this.$get('system/user/success').catch((e) => { console.log(e) })
+    // },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== 'redirect') {

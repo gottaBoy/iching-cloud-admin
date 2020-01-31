@@ -99,12 +99,25 @@ export default {
   methods: {
     async getRoutes() {
       const res = await getRoutes()
-      this.serviceRoutes = res.data
-      this.routes = this.generateRoutes(res.data)
+      console.log(res)
+      this.serviceRoutes = res.data.data
+      this.routes = this.generateRoutes(res.data.data)
     },
     async getRoles() {
       const res = await getRoles()
-      this.rolesList = res.data
+      this.rolesList = res.data.data
+      // this.loading = true
+      // const that = this
+      // await this.$get('auth/roles', {}).then((r) => {
+      //   console.log(r)
+      //   // const data = r.data
+      //   this.rolesList = r.data.data
+      //   console.log(this.rolesList)
+      //   that.loading = false
+      // }).catch((error) => {
+      //   console.error(error)
+      //   that.loading = false
+      // })
     },
 
     // Reshape the routes structure so that it looks the same as the sidebar

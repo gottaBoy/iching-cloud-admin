@@ -98,8 +98,9 @@ export default {
     async getList() {
       this.listLoading = true
       const { data } = await fetchList(this.listQuery)
-      this.list = data.items
-      this.total = data.total
+      console.log(data)
+      this.list = data.data.items
+      this.total = data.data.total
       this.listLoading = false
       this.oldList = this.list.map(v => v.id)
       this.newList = this.oldList.slice()

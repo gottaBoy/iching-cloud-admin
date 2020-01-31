@@ -69,7 +69,9 @@ export default {
     fetchData() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
+        const data = response.data
+        console.log(data)
+        this.list = data.data.items
         this.listLoading = false
       })
     },

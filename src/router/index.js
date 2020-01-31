@@ -1,5 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import db from '@/utils/localstorage'
+// import request from '@/utils/request'
+import store from '@/store/index'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 Vue.use(Router)
 
@@ -392,8 +397,12 @@ const createRouter = () => new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
-
 const router = createRouter()
+
+// const router = new Router({
+//   scrollBehavior: () => ({ y: 0 }),
+//   routes: constantRoutes
+// })
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
@@ -401,4 +410,111 @@ export function resetRouter() {
   router.matcher = newRouter.matcher // reset router
 }
 
+// let asyncRouter = asyncRoutes
+const whiteList = ['/login']
+
+// 导航守卫，渲染动态路由
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  if (whiteList.indexOf(to.path) !== -1) {
+    next()
+  } else {
+    const token = db.get('ACCESS_TOKEN')
+    // const user = db.get('USER')
+    const userRouter = get('USER_ROUTER')
+    // if (token.length && user) {
+    //   if (!asyncRouter) {
+    //     if (!userRouter) {
+    //       request.get(`system/menu/${user.username}`).then((res) => {
+    //         const permissions = res.data.data.permissions
+    //         store.commit('auth/setPermissions', permissions)
+    //         asyncRouter = res.data.data.routes
+    //         store.commit('auth/setRoutes', asyncRouter)
+    //         save('USER_ROUTER', asyncRouter)
+    //         go(to, next)
+    //       })
+    //     } else {
+    //       asyncRouter = userRouter
+    //       go(to, next)
+    //     }
+    //   } else {
+    //     next()
+    //   }
+    // } else {
+    //   if (to.path === '/login') {
+    //     next()
+    //   } else {
+    //     next('/login')
+    //   }
+    // }
+    if (token.length) {
+      if (!userRouter) {
+        store.commit('auth/setRoutes', asyncRoutes)
+        save('USER_ROUTER', asyncRoutes)
+        // generate accessible routes map based on roles
+        store.commit('user/SET_ROLES', ['admin'])
+        store.dispatch('permission/generateRoutes', ['admin'])
+
+        // dynamically add accessible routes
+        router.addRoutes(asyncRoutes)
+
+        // hack method to ensure that addRoutes is complete
+        // set the replace: true, so the navigation will not leave a history record
+        next({ ...to, replace: true })
+      } else {
+        next()
+      }
+    } else {
+      if (to.path === '/login') {
+        next()
+      } else {
+        next('/login')
+      }
+    }
+  }
+})
+
+router.afterEach(() => {
+  NProgress.done()
+})
+
+// function go(to, next) {
+//   asyncRouter = filterAsyncRouter(asyncRouter)
+//   router.addRoutes(asyncRouter)
+//   next({ ...to, replace: true })
+// }
+
+function save(name, data) {
+  localStorage.setItem(name, JSON.stringify(data))
+}
+
+function get(name) {
+  return JSON.parse(localStorage.getItem(name))
+}
+
+// function filterAsyncRouter(routes) {
+//   return routes.filter((route) => {
+//     const component = route.component
+//     if (component) {
+//       if (route.component === 'Layout') {
+//         route.component = Layout
+//       } else {
+//         console.log(component)
+//         route.component = view(component)
+//       }
+//       if (route.children && route.children.length) {
+//         route.children = filterAsyncRouter(route.children)
+//       }
+//       return true
+//     }
+//   })
+// }
+
+// function view(path) {
+//   return function(resolve) {
+//     // import(`@/views/${path}/vue`).then(mod => {
+//     //   resolve(mod)
+//     // })
+//   }
+// }
 export default router

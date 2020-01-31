@@ -1,38 +1,38 @@
-import request from '@/utils/request'
+import { service } from '@/utils/request'
 
 export function getRoutes() {
-  return request({
-    url: '/vue-element-admin/routes',
+  return service({
+    url: '/auth/routes',
     method: 'get'
   })
 }
 
 export function getRoles() {
-  return request({
-    url: '/vue-element-admin/roles',
+  return service({
+    url: '/auth/roles',
     method: 'get'
   })
 }
 
 export function addRole(data) {
-  return request({
-    url: '/vue-element-admin/role',
+  return service({
+    url: '/auth/role',
     method: 'post',
     data
   })
 }
 
 export function updateRole(id, data) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
+  return service({
+    url: `/auth/role/${id}`,
     method: 'put',
     data
   })
 }
 
 export function deleteRole(id) {
-  return request({
-    url: `/vue-element-admin/role/${id}`,
+  return service({
+    url: `/auth/role/${id}`,
     method: 'delete'
   })
 }

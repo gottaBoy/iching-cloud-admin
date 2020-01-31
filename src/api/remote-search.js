@@ -1,16 +1,16 @@
-import request from '@/utils/request'
+import { service } from '@/utils/request'
 
 export function searchUser(name) {
-  return request({
-    url: '/vue-element-admin/search/user',
+  return service({
+    url: '/search/user',
     method: 'get',
     params: { name }
   })
 }
 
 export function transactionList(query) {
-  return request({
-    url: '/vue-element-admin/transaction/list',
+  return service({
+    url: '/transaction/list',
     method: 'get',
     params: query
   })
