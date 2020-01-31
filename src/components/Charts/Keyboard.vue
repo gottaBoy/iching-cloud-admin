@@ -24,6 +24,17 @@ export default {
     height: {
       type: String,
       default: '200px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
+      default: function() {
+        return {
+          xAxisData: [],
+          data1: [],
+          data2: []
+        }
+      }
     }
   },
   data() {
@@ -32,7 +43,9 @@ export default {
     }
   },
   mounted() {
+    console.log('start initChart')
     this.initChart()
+    console.log('end initChart')
   },
   beforeDestroy() {
     if (!this.chart) {
@@ -44,15 +57,16 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))
-
-      const xAxisData = []
-      const data = []
-      const data2 = []
-      for (let i = 0; i < 50; i++) {
-        xAxisData.push(i)
-        data.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5)
-        data2.push((Math.sin(i / 5) * (i / 5 + 10) + i / 6) * 3)
-      }
+      console.log(1)
+      // const xAxisData = []
+      // const data = []
+      // const data2 = []
+      // for (let i = 0; i < 50; i++) {
+      //   xAxisData.push(i)
+      //   data.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5)
+      //   data2.push((Math.sin(i / 5) * (i / 5 + 10) + i / 6) * 3)
+      // }
+      const { xAxisData, data1, data2 } = { ...this.chartData }
       this.chart.setOption({
         backgroundColor: '#08263a',
         grid: {
@@ -110,7 +124,7 @@ export default {
         }, {
           name: 'Simulate Shadow',
           type: 'line',
-          data,
+          data1,
           z: 2,
           showSymbol: false,
           animationDelay: 0,
@@ -131,7 +145,7 @@ export default {
         }, {
           name: 'front',
           type: 'bar',
-          data,
+          data1,
           xAxisIndex: 1,
           z: 3,
           itemStyle: {

@@ -24,6 +24,17 @@ export default {
     height: {
       type: String,
       default: '200px'
+    },
+    chartData: {
+      type: Object,
+      required: true,
+      default: function() {
+        return {
+          data1: [],
+          data2: [],
+          data3: []
+        }
+      }
     }
   },
   data() {
@@ -44,6 +55,7 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(document.getElementById(this.id))
+      const { data1, data2, data3 } = { ...this.chartData }
       const xData = (function() {
         const data = []
         for (let i = 1; i < 13; i++) {
@@ -182,20 +194,7 @@ export default {
               }
             }
           },
-          data: [
-            709,
-            1917,
-            2455,
-            2610,
-            1719,
-            1433,
-            1544,
-            3285,
-            5208,
-            3372,
-            2484,
-            4078
-          ]
+          data: data1
         },
 
         {
@@ -215,20 +214,7 @@ export default {
               }
             }
           },
-          data: [
-            327,
-            1776,
-            507,
-            1200,
-            800,
-            482,
-            204,
-            1390,
-            1001,
-            951,
-            381,
-            220
-          ]
+          data: data2
         }, {
           name: 'average',
           type: 'line',
@@ -248,20 +234,7 @@ export default {
               }
             }
           },
-          data: [
-            1036,
-            3693,
-            2962,
-            3810,
-            2519,
-            1915,
-            1748,
-            4675,
-            6209,
-            4323,
-            2865,
-            4298
-          ]
+          data: data3
         }
         ]
       })
